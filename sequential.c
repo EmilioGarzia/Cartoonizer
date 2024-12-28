@@ -80,10 +80,10 @@ void create_cartoon_image(Color* pixels, int* assignments, Color* centroids, int
 
 int main() {
     const int num_clusters = 90;  // Numero di colori finali (clusters)
-    const int max_iterations = 10;
+    const int max_iterations = 50;
 
     // Carica l'immagine utilizzando OpenCV
-    cv::Mat image = cv::imread("image.jpg");
+    cv::Mat image = cv::imread("images/image.jpg");
 
     if (image.empty()) {
         printf("Errore nel caricare l'immagine\n");
@@ -93,6 +93,8 @@ int main() {
     int width = image.cols;
     int height = image.rows;
     int num_pixels = width * height;
+
+    double start = (double)clock()/CLOCKS_PER_SEC;
 
     // Converti l'immagine in un array di pixel RGB
     Color* pixels = (Color*)malloc(num_pixels * sizeof(Color));
@@ -112,10 +114,6 @@ int main() {
         centroids[i].g = (float)rand() / RAND_MAX;
         centroids[i].b = (float)rand() / RAND_MAX;
     }
-
-    printf("R: %f\n", centroids[15].r);
-    printf("G: %f\n", centroids[15].g);
-    printf("B: %f\n", centroids[15].b);
 
     int* assignments = (int*)malloc(num_pixels * sizeof(int));
     int* cluster_sizes = (int*)malloc(num_clusters * sizeof(int));
@@ -143,8 +141,14 @@ int main() {
     }
 
     // Salva l'immagine cartoonizzata
-    cv::imwrite("cartoon_image.jpg", image);
+    cv::imwrite("images/cartoon_image.jpg", image);
 
+    double end = (double)clock()/CLOCKS_PER_SEC;
+
+    double delta = end-start;
+
+    std::cout << "Execution time: " << delta << "s" << std::endl;
+  
     // Pulizia
     free(pixels);
     free(centroids);
