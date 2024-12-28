@@ -90,10 +90,10 @@ __global__ void create_cartoon_image(Color* pixels, int* assignments, Color* cen
 
 int main() {
     const int num_clusters = 90;  // Numero di colori finali (clusters)
-    const int max_iterations = 10;
+    const int max_iterations = 50;
 
     // Carica l'immagine utilizzando OpenCV
-    cv::Mat image = cv::imread("image.jpg");
+    cv::Mat image = cv::imread("images/image.jpg");
 
     if (image.empty()) {
         printf("Errore nel caricare l'immagine\n");
@@ -103,6 +103,11 @@ int main() {
     int width = image.cols;
     int height = image.rows;
     int num_pixels = width * height;
+
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start);
 
     // Converti l'immagine in un array di pixel RGB
     Color* pixels = (Color*)malloc(num_pixels * sizeof(Color));
@@ -175,7 +180,17 @@ int main() {
     }
 
     // Salva l'immagine cartoonizzata
-    cv::imwrite("cartoon_image.jpg", image);
+    cv::imwrite("images/cartoon_image.jpg", image);
+
+    cudaEventRecord(stop);
+
+    cudaEventSynchronize(stop);
+
+    // Calcolo del tempo trascorso
+    float milliseconds = 0;
+    cudaEventElapsedTime(&milliseconds, start, stop);
+
+    printf("Tempo di esecuzione %fms\n", milliseconds);
 
     // Pulizia
     free(pixels);
