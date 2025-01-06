@@ -1,5 +1,9 @@
 /*
-nvcc main.cu -o main -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
+    @brief Image cartoonization using K-means colors quantization: PARALLEL CUDA VERSION
+    @file parallel.cu
+    @author Emilio Garzia, Luigi Marino
+    @date 2025
+    @details nvcc main.cu -o main -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
 */
 
 #include <opencv2/opencv.hpp>
@@ -13,7 +17,7 @@ typedef struct {
     float r, g, b;
 } Color;
 
-// Kernel per assegnare ciascun pixel al cluster più vicino
+// Assign pixel to centroid kernel
 __global__ void assign_pixels_to_centroids(Color* pixels, Color* centroids, int* assignments, int num_pixels, int num_centroids) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_pixels) {
@@ -21,7 +25,7 @@ __global__ void assign_pixels_to_centroids(Color* pixels, Color* centroids, int*
         int closest_centroid = 0;
         Color pixel = pixels[idx];
 
-        // Calcolo della distanza tra il pixel e ogni centroide
+        // Distance among pixels and centroids
         for (int i = 0; i < num_centroids; i++) {
             float dist = (pixel.r - centroids[i].r) * (pixel.r - centroids[i].r) +
                          (pixel.g - centroids[i].g) * (pixel.g - centroids[i].g) +
@@ -35,7 +39,7 @@ __global__ void assign_pixels_to_centroids(Color* pixels, Color* centroids, int*
     }
 }
 
-// Kernel per aggiornare i centroidi senza atomiche
+// Update centroids kernel
 __global__ void update_centroids(Color* pixels, int* assignments, Color* centroids, int* cluster_sizes, int num_pixels, int num_centroids) {
     __shared__ float shared_centroids_r[256];
     __shared__ float shared_centroids_g[256];
@@ -52,7 +56,7 @@ __global__ void update_centroids(Color* pixels, int* assignments, Color* centroi
     }
     __syncthreads();
 
-    // Aggiorna i centroidi in base ai pixel assegnati (memoria condivisa)
+    // Update the centroid after pixels assignment (shared memory)
     if (idx < num_pixels) {
         int cluster_idx = assignments[idx];
         atomicAdd(&shared_centroids_r[cluster_idx], pixels[idx].r);
@@ -62,7 +66,7 @@ __global__ void update_centroids(Color* pixels, int* assignments, Color* centroi
     }
     __syncthreads();
 
-    // Ogni thread calcola il centroide finale
+    // Each thread compute the final centroid
     if (threadIdx.x < num_centroids) {
         if (shared_cluster_sizes[threadIdx.x] > 0) {
             centroids[threadIdx.x].r = shared_centroids_r[threadIdx.x] / shared_cluster_sizes[threadIdx.x];
@@ -72,14 +76,14 @@ __global__ void update_centroids(Color* pixels, int* assignments, Color* centroi
     }
 }
 
-// Kernel per creare l'immagine cartoonizzata
+// Image maker kernel
 __global__ void create_cartoon_image(Color* pixels, int* assignments, Color* centroids, int num_pixels) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_pixels) {
         Color pixel = pixels[idx];
         int closest_centroid = assignments[idx];
 
-        // Assegna il pixel al centroide più vicino
+        // Assign the pixel to the closest cluster
         pixel.r = centroids[closest_centroid].r;
         pixel.g = centroids[closest_centroid].g;
         pixel.b = centroids[closest_centroid].b;
@@ -88,15 +92,12 @@ __global__ void create_cartoon_image(Color* pixels, int* assignments, Color* cen
     }
 }
 
+// driver code
 int main() {
-    const int num_clusters = 90;  // Numero di colori finali (clusters)
-    const int max_iterations = 50;
-
-    // Carica l'immagine utilizzando OpenCV
+    // Load and check input images
     cv::Mat image = cv::imread("images/image.jpg");
-
     if (image.empty()) {
-        printf("Errore nel caricare l'immagine\n");
+        printf("ERROR: An error were occurred during the image loading\n");
         return -1;
     }
 
@@ -104,12 +105,19 @@ int main() {
     int height = image.rows;
     int num_pixels = width * height;
 
+    // Input parameters
+    const int num_clusters = 20;  // total amount of colors used on the output image
+    const int max_iterations = 50;
+    const int nThreads = 256;
+    const int nBlocks = (num_pixels + nThreads-1)/ nThreads; // grid size based on number of pixels
+    
+
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
     cudaEventRecord(start);
 
-    // Converti l'immagine in un array di pixel RGB
+    // Convert the image channel in RGB
     Color* pixels = (Color*)malloc(num_pixels * sizeof(Color));
     for (int i = 0; i < num_pixels; i++) {
         cv::Vec3b color = image.at<cv::Vec3b>(i / width, i % width);
@@ -118,9 +126,9 @@ int main() {
         pixels[i].r = (float)color[2] / 255.0f;
     }
 
-    srand(time(NULL));
+    srand(42);
 
-    // Centroidi iniziali (in GPU)
+    // Initial centroids (in GPU)
     Color* centroids = (Color*)malloc(num_clusters * sizeof(Color));
     for (int i = 0; i < num_clusters; i++) {
         centroids[i].r = (float)rand() / RAND_MAX;
@@ -128,21 +136,16 @@ int main() {
         centroids[i].b = (float)rand() / RAND_MAX;
     }
 
-    printf("R: %f\n", centroids[15].r);
-    printf("G: %f\n", centroids[15].g);
-    printf("B: %f\n", centroids[15].b);
-
     Color* d_pixels;
     Color* d_centroids;
     int* d_assignments;
     int* d_cluster_sizes;
 
-    // Allocazione della memoria su GPU
+    // GPU memory allocation
     cudaMalloc(&d_pixels, num_pixels * sizeof(Color));
     cudaMalloc(&d_centroids, num_clusters * sizeof(Color));
     cudaMalloc(&d_assignments, num_pixels * sizeof(int));
     cudaMalloc(&d_cluster_sizes, num_clusters * sizeof(int));
-
     cudaMemcpy(d_pixels, pixels, num_pixels * sizeof(Color), cudaMemcpyHostToDevice);
     cudaMemcpy(d_centroids, centroids, num_clusters * sizeof(Color), cudaMemcpyHostToDevice);
 
@@ -151,25 +154,24 @@ int main() {
     memset(cluster_sizes, 0, num_clusters * sizeof(int));
     cudaMemcpy(d_cluster_sizes, cluster_sizes, num_clusters * sizeof(int), cudaMemcpyHostToDevice);
 
-    // Esegui K-means per un numero di iterazioni
+    // K-means execution
     for (int iter = 0; iter < max_iterations; iter++) {
-        // Passo 1: Assegna i pixel ai centri
+        // Step 1: Assign pixels to centroids
         assign_pixels_to_centroids<<<(num_pixels + 255) / 256, 256>>>(d_pixels, d_centroids, d_assignments, num_pixels, num_clusters);
         cudaDeviceSynchronize();
 
-        // Passo 2: Aggiorna i centroidi
-        update_centroids<<<(num_clusters + 255) / 256, 256>>>(d_pixels, d_assignments, d_centroids, d_cluster_sizes, num_pixels, num_clusters);
+        // Step 2: Keep the centroids up to date
+        update_centroids<<<(num_clusters+nThreads-1)/nThreads, nThreads>>>(d_pixels, d_assignments, d_centroids, d_cluster_sizes, num_pixels, num_clusters);
         cudaDeviceSynchronize();
     }
 
-    // Crea l'immagine cartoonizzata sulla GPU
-    create_cartoon_image<<<(num_pixels + 255) / 256, 256>>>(d_pixels, d_assignments, d_centroids, num_pixels);
+    // Make the output image using GPU
+    create_cartoon_image<<<nBlocks, nThreads>>>(d_pixels, d_assignments, d_centroids, num_pixels);
     cudaDeviceSynchronize();
 
-    // Copia i pixel finali sulla CPU
+    // Copy the output image on CPU in order to visualize it
     cudaMemcpy(pixels, d_pixels, num_pixels * sizeof(Color), cudaMemcpyDeviceToHost);
 
-    // Crea l'immagine finale
     for (int i = 0; i < num_pixels; i++) {
         cv::Vec3b new_color(
             (unsigned char)(pixels[i].b * 255),
@@ -179,20 +181,16 @@ int main() {
         image.at<cv::Vec3b>(i / width, i % width) = new_color;
     }
 
-    // Salva l'immagine cartoonizzata
-    cv::imwrite("images/cartoon_image.jpg", image);
+    cv::imwrite("images/cartoon_image_parallel.jpg", image);
 
+    // Compute and print the elapsed time
     cudaEventRecord(stop);
-
     cudaEventSynchronize(stop);
-
-    // Calcolo del tempo trascorso
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
-
     printf("Tempo di esecuzione %fms\n", milliseconds);
 
-    // Pulizia
+    // Free the memories
     free(pixels);
     free(centroids);
     free(cluster_sizes);
