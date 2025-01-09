@@ -111,7 +111,6 @@ int main() {
     const int nThreads = 256;
     const int nBlocks = (num_pixels + nThreads-1)/ nThreads; // grid size based on number of pixels
     
-
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
@@ -157,7 +156,7 @@ int main() {
     // K-means execution
     for (int iter = 0; iter < max_iterations; iter++) {
         // Step 1: Assign pixels to centroids
-        assign_pixels_to_centroids<<<(num_pixels + 255) / 256, 256>>>(d_pixels, d_centroids, d_assignments, num_pixels, num_clusters);
+        assign_pixels_to_centroids<<<(num_pixels+nThreads-1)/nThreads, nThreads>>>(d_pixels, d_centroids, d_assignments, num_pixels, num_clusters);
         cudaDeviceSynchronize();
 
         // Step 2: Keep the centroids up to date
