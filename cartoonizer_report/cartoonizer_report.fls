@@ -1,4 +1,4 @@
-PWD /Users/luigimarino/Documents/GitHub/Cartoonizer/cartoonizer_report
+PWD /home/emilio/Desktop/Cartoonizer/cartoonizer_report
 INPUT /usr/local/texlive/2024/texmf-var/web2c/luahbtex/lualatex.fmt
 INPUT ./cartoonizer_report.tex
 OUTPUT cartoonizer_report.log
