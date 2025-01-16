@@ -151,7 +151,15 @@ int main(int argc, char* argv[]) {
     }
 
     cv::Mat output_image;
-    kmeans_cpu(image, clusters, iterations, output_image, seed);
+
+    clock_t start_time, end_time;
+    start_time = clock();
+
+    kmeans_cpu(image, clusters, iterations, output_image, seed);    
+
+    end_time = clock();
+    double elapsed_time = ((double)end_time-(double)start_time)/CLOCKS_PER_SEC;
+    printf("Elapsed time: %lf seconds\n", elapsed_time);
 
     // Save the output
     cv::imwrite(output_image_path, output_image);
