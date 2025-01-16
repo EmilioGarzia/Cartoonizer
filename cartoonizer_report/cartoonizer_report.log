@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.29)  16 JAN 2025 09:34
+This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.29)  16 JAN 2025 09:38
  restricted system commands enabled.
  file:line:error style messages enabled.
 **cartoonizer_report.tex
@@ -768,7 +768,7 @@ Here is how much of LuaTeX's memory you used:
  7 attribute_list, 1 write nodes
    avail lists: 2:117,3:54,4:21,5:68,6:12,7:574,8:1,9:120,10:3,11:18
  47473 multiletter control sequences out of 65536+600000
- 64 fonts using 21174763 bytes
+ 64 fonts using 21174839 bytes
  90i,6n,91p,352b,369s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.o
 tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.o
