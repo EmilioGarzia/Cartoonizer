@@ -1,10 +1,12 @@
-cartoonizer_report/
 cartoonizer_report/cartoonizer_report.fdb_latexmk
 cartoonizer_report/cartoonizer_report.fls
 cartoonizer_report/cartoonizer_report.log
-cartoonizer_report/cartoonizer_report.pdf
 cartoonizer_report/cartoonizer_report.synctex.gz
 cartoonizer_report/cartoonizer_report.aux
 cartoonizer_report/cartoonizer_report.out
 cartoonizer_report/cartoonizer_report.synctex.gz
-
+cartoonizer_report/cartoonizer_report-blx.bib
+cartoonizer_report/*.bbl
+cartoonizer_report/*.blg
+cartoonizer_report/*.run.xml
+cartoonizer_report/cartoonizer_report.toc
