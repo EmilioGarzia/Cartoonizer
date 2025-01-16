@@ -13,6 +13,9 @@
 \usepackage{emoji}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage[backend=bibtex,sorting=none]{biblatex} % or biblatex with biber
+\addbibresource{bibliography.bib} % Replace 'yourfile' with the actual .bib filename
+
 %----------------------------------------------- SETTAGGI VARI DEI PACKAGE IMPORTATI -------------------------------------------------%
 
 % Impostazioni di hyperref
@@ -108,6 +111,9 @@
 \newpage
 
 % Inclusione dei .tex esterni
-\input{chapters/introduction}
+\input{chapters/[01]_introduction}
+\input{chapters/[02]_theoretical_background}
 
+
+\printbibliography
 \end{document}  % Fine del documento
