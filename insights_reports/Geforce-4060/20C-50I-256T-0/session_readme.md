@@ -18,6 +18,14 @@ To run the UI Nsight Compute tool, execute the command as shown below:
 | #Iterations | `50` |
 | #Threads | `256` |
 
+# Used kernels
+
+| Kernel signature | Kernal launch parameters |
+|:-:|:-:|
+| `assign_pixels_to_centroids()` | `<<<(num_pixels+nThreads-1)/nThreads, nThreads>>>` |
+| `update_centroids()` | `<<<(num_clusters+nThreads-1)/nThreads, nThreads>>>` |
+| `update_centroids()` | `<<<(num_clusters+nThreads-1)/nThreads, nThreads>>>` |
+
 # GPU specs
 
 | Property | Value |
