@@ -1,10 +1,10 @@
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.29)  6 JAN 2025 02:41
+This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.15)  16 JAN 2025 09:30
  restricted system commands enabled.
  file:line:error style messages enabled.
 **cartoonizer_report.tex
 (./cartoonizer_report.tex
 LaTeX2e <2024-11-01> patch level 1
-L3 programming layer <2024-12-09>
+L3 programming layer <2024-11-02>
 Lua module: luaotfload 2024-02-14 v3.28 Lua based OpenType font support
 Lua module: lualibs 2023-07-13 v2.76 ConTeXt Lua standard libraries.
 Lua module: lualibs-extended 2023-07-13 v2.76 ConTeXt Lua libraries -- extended 
@@ -151,7 +151,7 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 )
 (/usr/local/texlive/2024/texmf-dist/tex/latex/unicode-math/unicode-math.sty
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2024-12-09 L3 programming layer (loader) 
+Package: expl3 2024-11-02 L3 programming layer (loader) 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-luatex.def
 File: l3backend-luatex.def 2024-05-08 L3 backend support: PDF output (LuaTeX)
@@ -487,7 +487,7 @@ LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 Package hyperref Info: Option `colorlinks' set `true' on input line 29.
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
-Package: fancyhdr 2024/12/09 v4.5 Extensive control of page headers and footers
+Package: fancyhdr 2024/11/20 v4.4 Extensive control of page headers and footers
 
 \f@nch@headwidth=\skip58
 \f@nch@O@elh=\skip59
@@ -502,6 +502,17 @@ Package: fancyhdr 2024/12/09 v4.5 Extensive control of page headers and footers
 (/usr/local/texlive/2024/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 )
+Runaway argument?
+{Emilio Garzia [mat. 0124/314] \\ Luigi Marino [mat. 0124/320] \date \ETC.
+./cartoonizer_report.tex:93: Paragraph ended before \author  was complete.
+<to be read again> 
+\par 
+l.93 
+   
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
 (./cartoonizer_report.aux)
 \openout1 = cartoonizer_report.aux
 
@@ -733,6 +744,10 @@ fBuzz].
 
 
 
+LaTeX Warning: No \author given.
+
+
+
 [1
 
 
@@ -754,21 +769,21 @@ Chapter 0.
 ] (./cartoonizer_report.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 1
-L3 programming layer <2024-12-09>
+L3 programming layer <2024-11-02>
  ***********
 Package rerunfilecheck Info: File `cartoonizer_report.out' has not changed.
 (rerunfilecheck)             Checksum: D3FFCE9658C10B1EF86B610CDD6C19C7;187.
 )
 
 Here is how much of LuaTeX's memory you used:
- 24849 strings out of 475554
+ 24800 strings out of 475630
  100000,1373583 words of node,token memory allocated
  513 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 7 attribute, 57 glue_spec,
  7 attribute_list, 1 write nodes
-   avail lists: 2:117,3:54,4:21,5:68,6:12,7:559,8:1,9:120,10:3,11:18
- 47473 multiletter control sequences out of 65536+600000
- 64 fonts using 21174611 bytes
+   avail lists: 2:113,3:54,4:21,5:71,6:12,7:415,8:1,9:111,10:3,11:21
+ 47348 multiletter control sequences out of 65536+600000
+ 64 fonts using 21174687 bytes
  90i,6n,91p,352b,369s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.o
 tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.o
@@ -776,7 +791,7 @@ tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.o
 tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-regula
 r.otf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman17-reg
 ular.otf>
-Output written on cartoonizer_report.pdf (3 pages, 16880 bytes).
+Output written on cartoonizer_report.pdf (3 pages, 16177 bytes).
 
 PDF statistics: 70 PDF objects out of 1000 (max. 8388607)
  47 compressed objects within 1 object stream
