@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.15)  16 JAN 2025 09:30
+This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.15)  16 JAN 2025 09:32
  restricted system commands enabled.
  file:line:error style messages enabled.
 **cartoonizer_report.tex
@@ -502,17 +502,6 @@ Package: fancyhdr 2024/11/20 v4.4 Extensive control of page headers and footers
 (/usr/local/texlive/2024/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 )
-Runaway argument?
-{Emilio Garzia [mat. 0124/314] \\ Luigi Marino [mat. 0124/320] \date \ETC.
-./cartoonizer_report.tex:93: Paragraph ended before \author  was complete.
-<to be read again> 
-\par 
-l.93 
-   
-I suspect you've forgotten a `}', causing me to apply this
-control sequence to too much text. How can we recover?
-My plan is to forget the whole thing and hope for the best.
-
 (./cartoonizer_report.aux)
 \openout1 = cartoonizer_report.aux
 
@@ -744,10 +733,6 @@ fBuzz].
 
 
 
-LaTeX Warning: No \author given.
-
-
-
 [1
 
 
@@ -781,9 +766,9 @@ Here is how much of LuaTeX's memory you used:
  513 words of node memory still in use:
    6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 7 attribute, 57 glue_spec,
  7 attribute_list, 1 write nodes
-   avail lists: 2:113,3:54,4:21,5:71,6:12,7:415,8:1,9:111,10:3,11:21
+   avail lists: 2:117,3:54,4:21,5:68,6:12,7:574,8:1,9:120,10:3,11:18
  47348 multiletter control sequences out of 65536+600000
- 64 fonts using 21174687 bytes
+ 64 fonts using 21174763 bytes
  90i,6n,91p,352b,369s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.o
 tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.o
@@ -791,7 +776,7 @@ tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.o
 tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-regula
 r.otf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman17-reg
 ular.otf>
-Output written on cartoonizer_report.pdf (3 pages, 16177 bytes).
+Output written on cartoonizer_report.pdf (3 pages, 17318 bytes).
 
 PDF statistics: 70 PDF objects out of 1000 (max. 8388607)
  47 compressed objects within 1 object stream
