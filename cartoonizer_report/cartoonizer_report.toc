@@ -11,3 +11,8 @@
 \contentsline {subsection}{\numberline {1.2.3}Challenges in Color Quantization}{8}{subsection.1.2.3}%
 \contentsline {subsection}{\numberline {1.2.4}Conclusion}{9}{subsection.1.2.4}%
 \contentsline {chapter}{\numberline {2}Technologies}{10}{chapter.2}%
+\contentsline {subsection}{\numberline {2.0.1}CUDA}{10}{subsection.2.0.1}%
+\contentsline {subsubsection}{NVIDIA Nsight Compute}{10}{section*.4}%
+\contentsline {subsubsection}{NVIDIA Nsight Systems}{10}{section*.5}%
+\contentsline {subsection}{\numberline {2.0.2}OpenCV}{10}{subsection.2.0.2}%
+\contentsline {chapter}{\numberline {3}Implementation}{12}{chapter.3}%
