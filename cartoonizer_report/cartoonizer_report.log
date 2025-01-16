@@ -1,14 +1,10 @@
-<<<<<<< HEAD
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.29)  16 JAN 2025 09:38
-=======
-This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.15)  16 JAN 2025 15:55
->>>>>>> origin/master
+This is LuaHBTeX, Version 1.18.0 (TeX Live 2024)  (format=lualatex 2024.12.29)  16 JAN 2025 16:17
  restricted system commands enabled.
  file:line:error style messages enabled.
 **cartoonizer_report.tex
 (./cartoonizer_report.tex
 LaTeX2e <2024-11-01> patch level 1
-L3 programming layer <2024-11-02>
+L3 programming layer <2024-12-09>
 Lua module: luaotfload 2024-02-14 v3.28 Lua based OpenType font support
 Lua module: lualibs 2023-07-13 v2.76 ConTeXt Lua standard libraries.
 Lua module: lualibs-extended 2023-07-13 v2.76 ConTeXt Lua libraries -- extended 
@@ -155,7 +151,7 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 )
 (/usr/local/texlive/2024/texmf-dist/tex/latex/unicode-math/unicode-math.sty
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2024-11-02 L3 programming layer (loader) 
+Package: expl3 2024-12-09 L3 programming layer (loader) 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-luatex.def
 File: l3backend-luatex.def 2024-05-08 L3 backend support: PDF output (LuaTeX)
@@ -724,7 +720,7 @@ Package biblatex Info: LuaTeX detected.
 (biblatex)             Assuming input encoding 'utf8'.
 Package biblatex Info: Document encoding is UTF8 ....
 Package biblatex Info: ... and expl3
-(biblatex)             2024-11-02 L3 programming layer (loader) 
+(biblatex)             2024-12-09 L3 programming layer (loader) 
 (biblatex)             is new enough (at least 2020/04/06),
 (biblatex)             setting 'casechanger=expl3'.
 
@@ -734,7 +730,7 @@ Package: blx-case-expl3 2024/03/21 v3.20 expl3 case changing code for biblatex
 Package hyperref Info: Option `colorlinks' set `true' on input line 32.
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
-Package: fancyhdr 2024/11/20 v4.4 Extensive control of page headers and footers
+Package: fancyhdr 2024/12/09 v4.5 Extensive control of page headers and footers
 
 \f@nch@headwidth=\skip80
 \f@nch@O@elh=\skip81
@@ -920,40 +916,39 @@ uage=dflt;mathfontdimen=xetex;mathfontdimen=tex3;"<6-8.5>"[latinmodern-math.otf
 sty=0;"<-6>"[latinmodern-math.otf]:mode=base;script=math;language=dflt;mathfont
 dimen=xetex;mathfontdimen=tex3;+ssty=1;"
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-<<<<<<< HEAD
 (fontspec)             <->"[latinmodern-math.otf]:mode=base;script=math;languag
 e=dflt;mathfontdimen=xetex;mathfontdimen=tex3;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
 (Font)              `largesymbols' in the math version `normal' on input line 9
-6.
+9.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
 (Font)                  OMX/cmex/m/n --> TU/latinmodern-math.otf(3)/m/n on inpu
-t line 96.
+t line 99.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 96.
+(Font)              `largesymbols' in the math version `bold' on input line 99.
 
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
 (Font)                  OMX/cmex/m/n --> TU/latinmodern-math.otf(3)/b/n on inpu
-t line 96.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 96.
+t line 99.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 99.
 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 96.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 99.
 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Package hyperref Info: Link coloring ON on input line 96.
+Package hyperref Info: Link coloring ON on input line 99.
 
 (./cartoonizer_report.out) (./cartoonizer_report.out)
-\@outlinefile=\write3
+\@outlinefile=\write4
 
-\openout3 = cartoonizer_report.out
+\openout4 = cartoonizer_report.out
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/pdflscape/pdflscape.sty
 Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
@@ -982,6 +977,28 @@ fBuzz].
 (fontspec)             - 'normal' (m/n) with NFSS spec.: <->"name:Noto Color
 (fontspec)             Emoji:mode=harf;script=DFLT;language=dflt;"
 
+Package biblatex Info: Trying to load language 'english'...
+Package biblatex Info: ... file 'english.lbx' found.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/biblatex/lbx/english.lbx
+File: english.lbx 2024/03/21 v3.20 biblatex localization (PK/MW)
+)
+Package biblatex Info: LuaTeX detected.
+(biblatex)             Assuming input encoding 'utf8'.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+Package biblatex Info: LuaTeX detected.
+(biblatex)             Assuming input encoding 'utf8'.
+Package biblatex Info: Data encoding 'utf8' specified.
+(biblatex)             No need to reencode data.
+
+\openout3 = cartoonizer_report-blx.bib
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file 'cartoonizer_report.bbl' not found.
+
+No file cartoonizer_report.bbl.
+Package biblatex Info: Reference section=0 on input line 99.
+Package biblatex Info: Reference segment=0 on input line 99.
 
 
 [1
@@ -989,51 +1006,38 @@ fBuzz].
 
 {/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 (./cartoonizer_report.toc)
-\tf@toc=\write4
+\tf@toc=\write5
 
-\openout4 = cartoonizer_report.toc
+\openout5 = cartoonizer_report.toc
 
 
 [2
 
-] (./chapters/introduction.tex
-Chapter 0.
-)
+]
 
-[3
+! LaTeX Error: File `chapters/[01]_introduction.tex' not found.
 
-] (./cartoonizer_report.aux)
- ***********
-LaTeX2e <2024-11-01> patch level 1
-L3 programming layer <2024-12-09>
- ***********
-Package rerunfilecheck Info: File `cartoonizer_report.out' has not changed.
-(rerunfilecheck)             Checksum: D3FFCE9658C10B1EF86B610CDD6C19C7;187.
-)
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: tex)
+
+Enter file name: 
+./cartoonizer_report.tex:114: Emergency stop.
+<read *> 
+   
+l.114 \input{chapters/[01]_introduction}
+                                      
+*** (cannot \read from terminal in nonstop modes)
+
+
 
 Here is how much of LuaTeX's memory you used:
- 24849 strings out of 475554
- 100000,1373583 words of node,token memory allocated
- 513 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 2 glue, 4 kern, 1 glyph, 7 attribute, 57 glue_spec,
- 7 attribute_list, 1 write nodes
-   avail lists: 2:117,3:54,4:21,5:68,6:12,7:574,8:1,9:120,10:3,11:18
- 47473 multiletter control sequences out of 65536+600000
- 64 fonts using 21174839 bytes
- 90i,6n,91p,352b,369s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-regular.o
-tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman10-bold.o
-tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-bold.o
-tf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman12-regula
-r.otf></usr/local/texlive/2024/texmf-dist/fonts/opentype/public/lm/lmroman17-reg
-ular.otf>
-Output written on cartoonizer_report.pdf (3 pages, 17318 bytes).
-
-PDF statistics: 70 PDF objects out of 1000 (max. 8388607)
- 47 compressed objects within 1 object stream
- 6 named destinations out of 1000 (max. 131072)
- 17 words of extra memory for PDF output out of 10000 (max. 100000000)
-
-=======
-(fontspec)    
->>>>>>> origin/master
+ 31884 strings out of 475554
+ 125134,1648299 words of node,token memory allocated 525 words of node memory still in use:
+   5 hlist, 1 vlist, 2 rule, 1 dir, 4 kern, 1 glyph, 5 attribute, 67 glue_spec, 
+5 attribute_list nodes
+   avail lists: 1:3,2:121,3:31,4:21,5:67,6:12,7:576,8:1,9:122,10:3,11:18
+ 54445 multiletter control sequences out of 65536+600000
+ 62 fonts using 20911247 bytes
+ 90i,6n,91p,1947b,801s stack positions out of 10000i,1000n,20000p,200000b,200000s
+./cartoonizer_report.tex:114:  ==> Fatal error occurred, no output PDF file prod
+uced!

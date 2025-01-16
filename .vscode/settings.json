@@ -69,6 +69,9 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "format": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "__node_handle": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     }
 }
