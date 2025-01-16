@@ -46,40 +46,44 @@
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
-%definizione di colori personalizzati
-\definecolor{code_bg}{HTML}{38393b}
-\definecolor{keywords}{HTML}{037ffc}
-\definecolor{costant}{HTML}{fa205a}
-\definecolor{procedure}{HTML}{0af7f7}
+% Definizione di colori personalizzati per tema chiaro
+\definecolor{code_bg}{HTML}{eeeeee}         % Sfondi chiari
+\definecolor{keywords}{HTML}{037ffc}         % Colore per parole chiave
+\definecolor{costant}{HTML}{fa205a}          % Colore per costanti
+\definecolor{procedure}{HTML}{A020F0}        % Colore per le procedure
+\definecolor{variable}{HTML}{008080}         % Colore per le variabili (personalizzato)
+\definecolor{comments}{HTML}{808080}         % Colore per i commenti (grigio scuro)
 
 % Definisce lo stile dei blocchi di codice inseriti con \lstlisting
 \lstset{
-  language=python,                        % Linguaggio del codice
-  basicstyle=\ttfamily\footnotesize\color{white}, % Stile di base
-  keywordstyle=\color{keywords},       % Stile per le parole chiave
-  stringstyle=\color{orange},          % Stile per le stringhe
-  commentstyle=\color{lime},    % Stile per i commenti
-  numbers=left,                      % Posizione dei numeri di riga
-  numberstyle=\tiny\color{gray},     % Stile dei numeri di riga
-  stepnumber=1,                      % Numerazione ad ogni riga
-  numbersep=5pt,                     % Distanza tra numeri di riga e codice
-  backgroundcolor=\color{code_bg},   % Colore di sfondo del codice
-  showspaces=false,                  % Mostra spazi con simboli speciali
-  showstringspaces=false,            % Mostra spazi nelle stringhe
-  showtabs=false,                    % Mostra tab con simboli speciali
-  frame=single,                      % Cornice intorno al codice
-  rulecolor=\color{white},           % Colore della cornice
-  tabsize=4,                         % Dimensione del tab
-  captionpos=b,                      % Posizione della didascalia
-  breaklines=true,                   % Interruzione delle linee lunghe
-  breakatwhitespace=false,           % Interrompe le linee lunghe solo negli spazi
-  title=\lstname,                    % Mostra il nome del file
-  escapeinside={\%*}{*)},            % Escape per il LaTeX
-  morekeywords=[2]{loop, setup, delay, digitalWrite, ISR, digitalRead, analogReference, pinMode, begin, print, println, millis, main, wdt_disable, wdt_enable, wdt_reset, esp_task_wdt_deinit, esp_task_wdt_init, esp_task_wdt_add, esp_task_wdt_reset, printf},         %  Parole chiave aggiuntive
-  morekeywords=[3]{INPUT, OUTPUT, INPUT_PULLUP, HIGH, LOW, esp_task_wdt_config_t},
-  keywordstyle=[3]\color{costant},
-  keywordstyle=[2]\color{procedure}
+  language=c,                            % Linguaggio del codice
+  basicstyle=\ttfamily\footnotesize\color{black},  % Stile di base per il testo (nero su sfondo chiaro)
+  keywordstyle=\color{keywords},          % Stile per le parole chiave
+  stringstyle=\color{orange},             % Stile per le stringhe
+  commentstyle=\color{comments},          % Stile per i commenti
+  numbers=left,                           % Posizione dei numeri di riga
+  numberstyle=\tiny\color{gray},          % Stile dei numeri di riga
+  stepnumber=1,                           % Numerazione ad ogni riga
+  numbersep=5pt,                          % Distanza tra numeri di riga e codice
+  backgroundcolor=\color{code_bg},        % Colore di sfondo del codice
+  showspaces=false,                       % Mostra spazi con simboli speciali
+  showstringspaces=false,                 % Mostra spazi nelle stringhe
+  showtabs=false,                         % Mostra tab con simboli speciali
+  frame=single,                           % Cornice intorno al codice
+  rulecolor=\color{gray},                 % Colore della cornice
+  tabsize=4,                              % Dimensione del tab
+  captionpos=b,                           % Posizione della didascalia
+  breaklines=true,                        % Interruzione delle linee lunghe
+  breakatwhitespace=false,                % Interrompe le linee lunghe solo negli spazi
+  title=\lstname,                         % Mostra il nome del file
+  escapeinside={\%*}{*)},                 % Escape per il LaTeX
+  morekeywords=[2]{loop, setup, delay, digitalWrite, ISR, digitalRead, analogReference, pinMode, begin, print, println, millis, main, wdt_disable, wdt_enable, wdt_reset, esp_task_wdt_deinit, esp_task_wdt_init, esp_task_wdt_add, esp_task_wdt_reset, printf},         % Parole chiave aggiuntive
+  morekeywords=[3]{INPUT, OUTPUT, INPUT_PULLUP, HIGH, LOW, esp_task_wdt_config_t},  % Parole chiave aggiuntive
+  keywordstyle=[3]\color{costant},         % Colore per costanti
+  keywordstyle=[2]\color{procedure},      % Colore per le procedure
+  identifierstyle=\color{variable}        % Colore per le variabili (personalizzato)
 }
+
 
 % Definizione di un nuovo colore con XCOLOR
 %\definecolor{nome_nuove_colore}{codifica}{valori}
