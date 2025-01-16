@@ -19,7 +19,14 @@ To run the UI Nsight Compute tool, execute the command as shown below:
 | #Threads | `256` |
 | Random seed | `200` |
 
+# Results
 
+| Metric | Value |
+|:-:|:-:|
+| Execution time (Parallel version)| `~450 ms (0.45s)` |
+| Execution time (Sequential version)| `~4000 ms (4s)` |
+| Delta time | `-3550ms (-3.5s)` |
+| Speedup | `8.8` |
 
 # GPU specs
 
@@ -55,3 +62,8 @@ To run the UI Nsight Compute tool, execute the command as shown below:
 ![output](output_image.jpg)
 
 > Output Image
+
+# Authors
+
+* Emilio Garzia
+* Luigi Marino

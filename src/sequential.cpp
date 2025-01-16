@@ -158,8 +158,8 @@ int main(int argc, char* argv[]) {
     kmeans_cpu(image, clusters, iterations, output_image, seed);    
 
     end_time = clock();
-    double elapsed_time = ((double)end_time-(double)start_time)/CLOCKS_PER_SEC;
-    printf("Elapsed time: %lf seconds\n", elapsed_time);
+    double elapsed_time = ((double)end_time-(double)start_time)/(CLOCKS_PER_SEC/1000);
+    printf("Elapsed time: %lf ms\n", elapsed_time);
 
     // Save the output
     cv::imwrite(output_image_path, output_image);
