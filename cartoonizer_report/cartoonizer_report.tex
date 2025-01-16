@@ -1,0 +1,120 @@
+%----------------------------------------------- TIPO DI DOCUMENTO E INCLUSIONE DEI PACKAGE -------------------------------------------------%
+
+\documentclass[openany]{book}     % definisce la tipologia del documento (necessario)
+\usepackage{graphicx}       % Indispensabile se si vogliono importare immagini
+\usepackage{caption}
+\usepackage{listings}       % package per l'inclusione di blocchi di codice
+\usepackage{xcolor}         % package per l'utilizzo di font colorati
+\usepackage{unicode-math}
+\usepackage{float}          % Utile per il posizionamento di immagini, tabelle, ecc.
+\usepackage{hyperref}       % Inserisce colelgamenti ipertestuali cliccabili ai riferimenti
+\usepackage{tocbibind}      % Inserisce la bibliografia alla table of contents
+\usepackage{pdfpages}       % Permette di includere file PDF al documento
+\usepackage{emoji}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[backend=bibtex,sorting=none]{biblatex} % or biblatex with biber
+\addbibresource{bibliography.bib} % Replace 'yourfile' with the actual .bib filename
+
+%----------------------------------------------- SETTAGGI VARI DEI PACKAGE IMPORTATI -------------------------------------------------%
+
+% Impostazioni di hyperref
+\hypersetup{
+    colorlinks=true,         % Collega i link con colori
+    linkcolor=black,         % Colore dei link interni (e.g., TOC)
+    citecolor=black,         % Colore dei link alle citazioni bibliografiche
+    filecolor=black,         % Colore dei link ai file locali
+    urlcolor=black,          % Colore dei link esterni
+    linkbordercolor={0 0 0}, % Rimuove il bordo rosso dei link interni
+    citebordercolor={0 0 0}, % Rimuove il bordo rosso dei link alle citazioni
+    filebordercolor={0 0 0}, % Rimuove il bordo rosso dei link ai file locali
+    urlbordercolor={0 0 0}   % Rimuove il bordo rosso dei link esterni
+}
+
+% Setta il counter dei capitoli partendo da zero
+\setcounter{chapter}{-1}
+
+
+\usepackage{fancyhdr} % Pacchetto per la personalizzazione dell'intestazione e del piè di pagina
+\pagestyle{fancy} % Attiva il pacchetto fancyhdr
+
+% Configura il layout del piè di pagina
+\fancyhf{} % Pulisce tutte le impostazioni di intestazione e piè di pagina
+\fancyfoot[C]{\thepage} % Centra il numero di pagina in basso
+
+% Rimuove le linee di separazione predefinite di fancyhdr
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%definizione di colori personalizzati
+\definecolor{code_bg}{HTML}{38393b}
+\definecolor{keywords}{HTML}{037ffc}
+\definecolor{costant}{HTML}{fa205a}
+\definecolor{procedure}{HTML}{0af7f7}
+
+% Definisce lo stile dei blocchi di codice inseriti con \lstlisting
+\lstset{
+  language=python,                        % Linguaggio del codice
+  basicstyle=\ttfamily\footnotesize\color{white}, % Stile di base
+  keywordstyle=\color{keywords},       % Stile per le parole chiave
+  stringstyle=\color{orange},          % Stile per le stringhe
+  commentstyle=\color{lime},    % Stile per i commenti
+  numbers=left,                      % Posizione dei numeri di riga
+  numberstyle=\tiny\color{gray},     % Stile dei numeri di riga
+  stepnumber=1,                      % Numerazione ad ogni riga
+  numbersep=5pt,                     % Distanza tra numeri di riga e codice
+  backgroundcolor=\color{code_bg},   % Colore di sfondo del codice
+  showspaces=false,                  % Mostra spazi con simboli speciali
+  showstringspaces=false,            % Mostra spazi nelle stringhe
+  showtabs=false,                    % Mostra tab con simboli speciali
+  frame=single,                      % Cornice intorno al codice
+  rulecolor=\color{white},           % Colore della cornice
+  tabsize=4,                         % Dimensione del tab
+  captionpos=b,                      % Posizione della didascalia
+  breaklines=true,                   % Interruzione delle linee lunghe
+  breakatwhitespace=false,           % Interrompe le linee lunghe solo negli spazi
+  title=\lstname,                    % Mostra il nome del file
+  escapeinside={\%*}{*)},            % Escape per il LaTeX
+  morekeywords=[2]{loop, setup, delay, digitalWrite, ISR, digitalRead, analogReference, pinMode, begin, print, println, millis, main, wdt_disable, wdt_enable, wdt_reset, esp_task_wdt_deinit, esp_task_wdt_init, esp_task_wdt_add, esp_task_wdt_reset, printf},         %  Parole chiave aggiuntive
+  morekeywords=[3]{INPUT, OUTPUT, INPUT_PULLUP, HIGH, LOW, esp_task_wdt_config_t},
+  keywordstyle=[3]\color{costant},
+  keywordstyle=[2]\color{procedure}
+}
+
+% Definizione di un nuovo colore con XCOLOR
+%\definecolor{nome_nuove_colore}{codifica}{valori}
+\definecolor{darkgreen}{rgb}{0.0, 0.6, 0.0}
+
+% Personalizzazione delle caption per lstlisting
+\renewcommand{\lstlistingname}{Codice}  % Cambia il nome dell'ambiente "listings" in "Codice"
+
+%----------------------------------------------- META DATI DEL DOCUMENTO -------------------------------------------------%
+
+\title{Cartoonizer: report \\ High Performance Computing Project}
+\author{Emilio Garzia [mat. 0124/314] \\ Luigi Marino [mat. 0124/320]}
+\date{2025}
+
+%----------------------------------------------- INIZIO DEL DOCUMENTO -------------------------------------------------
+
+\begin{document}
+
+% Includi una copertina fatta in PDF al documento
+%\includepdf[pages=-, fitpaper=true]{pdf/cover.pdf}
+
+% Inserisce frontespizio con i Meta Dati
+\maketitle
+
+\newpage
+
+% Includi table of contents del documento
+\tableofcontents
+\newpage
+
+% Inclusione dei .tex esterni
+\input{chapters/[01]_introduction}
+\input{chapters/[02]_theoretical_background}
+\input{chapters/[03]_technologies.tex}
+\input{chapters/[04]_implementation.tex}
+
+\printbibliography
+\end{document}  % Fine del documento
