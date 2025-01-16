@@ -210,6 +210,9 @@ INPUT /usr/local/texlive/2024/texmf-var/luatex-cache/generic/fonts/otl/lmroman7-
 INPUT /usr/local/texlive/2024/texmf-var/luatex-cache/generic/fonts/otl/lmroman5-bold.luc
 INPUT ./images/kmeans.png
 INPUT ./images/kmeans.png
+INPUT ./images/color_quantization.png
+INPUT ./images/color_quantization.png
+INPUT ./chapters/[03]_technologies.tex
 INPUT /usr/local/texlive/2024/texmf-var/luatex-cache/generic/fonts/otl/lmromancaps10-regular.luc
 INPUT /usr/local/texlive/2024/texmf-var/luatex-cache/generic/fonts/otl/lmmono10-regular.luc
 INPUT ./cartoonizer_report.aux
