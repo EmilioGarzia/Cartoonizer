@@ -45,25 +45,51 @@ __global__ void assign_pixels_to_centroids(const Color* pixels, int* assignments
     }
 }
 
-// Kernel per aggiornare i centroidi in base agli assegnamenti dei pixel
-__global__ void update_centroids(const Color* pixels, int* assignments, Color* centroids, int* cluster_sizes, int num_pixels, int k) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < num_pixels) {
-        int cluster_idx = assignments[idx];
-        atomicAdd(&centroids[cluster_idx].r, pixels[idx].r);
-        atomicAdd(&centroids[cluster_idx].g, pixels[idx].g);
-        atomicAdd(&centroids[cluster_idx].b, pixels[idx].b);
-        atomicAdd(&cluster_sizes[cluster_idx], 1);
+
+// Funzione sequenziale per aggiornare i centroidi
+void update_centroids(const Color* pixels, int* assignments, Color* centroids, int* cluster_sizes, int num_pixels, int k) {
+    // Inizializza i centroidi e le dimensioni dei cluster
+    for (int i = 0; i < k; i++) {
+        centroids[i] = {0.0f, 0.0f, 0.0f};  // Centroidi inizializzati a (0, 0, 0)
+        cluster_sizes[i] = 0;  // Inizializza la dimensione del cluster a 0
+    }
+
+    // Passa attraverso tutti i pixel per accumulare i colori nei rispettivi centroidi
+    for (int i = 0; i < num_pixels; i++) {
+        int cluster_idx = assignments[i];
+        centroids[cluster_idx].r += pixels[i].r;
+        centroids[cluster_idx].g += pixels[i].g;
+        centroids[cluster_idx].b += pixels[i].b;
+        cluster_sizes[cluster_idx]++;
+    }
+
+    // Finalizza i centroidi dividendo per la dimensione del cluster
+    for (int i = 0; i < k; i++) {
+        if (cluster_sizes[i] > 0) {
+            centroids[i].r /= cluster_sizes[i];
+            centroids[i].g /= cluster_sizes[i];
+            centroids[i].b /= cluster_sizes[i];
+        }
     }
 }
 
-// Kernel per finalizzare i centroidi dividendo per la dimensione del cluster
-__global__ void finalize_centroids(Color* centroids, int* cluster_sizes, int k) {
-    int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < k && cluster_sizes[idx] > 0) {
-        centroids[idx].r /= cluster_sizes[idx];
-        centroids[idx].g /= cluster_sizes[idx];
-        centroids[idx].b /= cluster_sizes[idx];
+
+// Make the final result
+void build_output_image(cv::Mat input_image,cv::Mat& output_image, std::vector<int> assignments, std::vector<Color> centroids){
+    int width = input_image.cols;
+    int height = input_image.rows;
+
+    output_image = input_image.clone();
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            int cluster_idx = assignments[i * width + j];
+            cv::Vec3b new_color(
+                static_cast<unsigned char>(centroids[cluster_idx].b * 255),
+                static_cast<unsigned char>(centroids[cluster_idx].g * 255),
+                static_cast<unsigned char>(centroids[cluster_idx].r * 255)
+            );
+            output_image.at<cv::Vec3b>(i, j) = new_color;
+        }
     }
 }
 
@@ -139,7 +165,7 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
     int blocks_per_grid = (num_pixels + threads_per_block - 1) / threads_per_block;
 
     for (int iter = 0; iter < max_iter; iter++) {
-        // Passo 1: Assegna i pixel ai centroidi
+        // Passo 1: Assegna i pixel ai centroidi (parallelo su GPU)
         assign_pixels_to_centroids<<<blocks_per_grid, threads_per_block>>>(d_pixels, d_assignments, d_centroids, num_pixels, k);
         err = cudaGetLastError();
         if (err != cudaSuccess) {
@@ -148,25 +174,22 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
         }
         cudaDeviceSynchronize();
 
-        // Passo 2: Aggiorna i centroidi
-        cudaMemset(d_cluster_sizes, 0, k * sizeof(int));  // Reset delle dimensioni dei cluster
-        cudaMemset(d_centroids, 0, k * sizeof(Color));   // Reset dei centroidi
-        update_centroids<<<blocks_per_grid, threads_per_block>>>(d_pixels, d_assignments, d_centroids, d_cluster_sizes, num_pixels, k);
-        err = cudaGetLastError();
+        // Passo 2: Aggiorna i centroidi (sequenziale su CPU)
+        std::vector<int> assignments(num_pixels);
+        std::vector<int> cluster_sizes(k);
+
+        // Copia gli assegnamenti dalla GPU alla CPU
+        cudaMemcpy(assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
+
+        // Aggiornamento dei centroidi sequenziale
+        update_centroids(pixels.data(), assignments.data(), centroids.data(), cluster_sizes.data(), num_pixels, k);
+
+        // Copia i centroidi aggiornati dalla CPU alla GPU
+        err = cudaMemcpy(d_centroids, centroids.data(), k * sizeof(Color), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) {
-            std::cerr << "CUDA kernel launch failed for update_centroids: " << cudaGetErrorString(err) << std::endl;
+            std::cerr << "CUDA memcpy failed for centroids: " << cudaGetErrorString(err) << std::endl;
             return;
         }
-        cudaDeviceSynchronize();
-        
-        // Passo 3: Finalizza i centroidi dividendo per la dimensione dei cluster
-        finalize_centroids<<<(k + threads_per_block - 1) / threads_per_block, threads_per_block>>>(d_centroids, d_cluster_sizes, k);
-        err = cudaGetLastError();
-        if (err != cudaSuccess) {
-            std::cerr << "CUDA kernel launch failed for finalize_centroids: " << cudaGetErrorString(err) << std::endl;
-            return;
-        }
-        cudaDeviceSynchronize();
     }
 
     // Copia i centroidi finali e gli assegnamenti dal device all'host
@@ -174,26 +197,15 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
     std::vector<int> assignments(num_pixels);
     cudaMemcpy(assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
 
-    // Costruisci l'immagine di output
-    output_image = image.clone();
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-            int cluster_idx = assignments[i * width + j];
-            cv::Vec3b new_color(
-                static_cast<unsigned char>(centroids[cluster_idx].b * 255),
-                static_cast<unsigned char>(centroids[cluster_idx].g * 255),
-                static_cast<unsigned char>(centroids[cluster_idx].r * 255)
-            );
-            output_image.at<cv::Vec3b>(i, j) = new_color;
-        }
-    }
+    build_output_image(image, output_image, assignments, centroids);
 
-    // Libera la memoria su GPU
     cudaFree(d_pixels);
     cudaFree(d_centroids);
     cudaFree(d_assignments);
     cudaFree(d_cluster_sizes);
 }
+
+
 
 // Argument parser
 void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed, int& threads_per_block,std::string& input_image_path, std::string& output_image_path){
@@ -220,7 +232,6 @@ void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed
     if (optind < argc) output_image_path = argv[optind++];
 }
 
-// Driver code
 int main(int argc, char* argv[]) {
     int clusters = DEFAULT_CLUSTERS;
     int iterations = DEFAULT_ITERATIONS;
@@ -231,13 +242,11 @@ int main(int argc, char* argv[]) {
 
     arg_parser(argc, argv, clusters, iterations, seed, threads_per_block, input_image_path, output_image_path);
 
-    // Load Image
     if (input_image_path.empty() || output_image_path.empty()) {
         std::cerr << "Error: You must provide input and output image paths!" << std::endl;
         return -1;
     }
 
-    // Carica l'immagine
     cv::Mat image = cv::imread(input_image_path);
     if (image.empty()) {
         std::cerr << "Error loading image!" << std::endl;
@@ -245,11 +254,28 @@ int main(int argc, char* argv[]) {
     }
 
     cv::Mat output_image;
+
+    // useful for timing
+    cudaEvent_t start, stop;
+    float elapsedTime;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+    cudaEventRecord(start, 0);
+
+    // Launch kernel
     kmeans_gpu(image, clusters, iterations, threads_per_block, seed, output_image);
 
-    // Salva l'immagine di output
+    // compute elapsed time
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&elapsedTime, start, stop);
+    std::cout << "Kernel execution time: " << elapsedTime << " ms" << std::endl;
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+
+    // Save output image
     cv::imwrite(output_image_path, output_image);
-    std::cout << "GPU Output saved!" << output_image_path << std::endl;
+    std::cout << "Output saved to: " << output_image_path << std::endl;
 
     return 0;
 }

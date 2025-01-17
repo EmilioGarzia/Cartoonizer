@@ -1,1 +1,164 @@
-\chapter{Implementation}
+\chapter{Technical implementation}
+In this chapter, we present an overview of our work on implementing k-means clustering algorithms for image processing. Two distinct approaches have been developed, each tailored to different computational paradigms and performance goals:
+
+\begin{itemize}
+\item \textbf{Sequential Algorithm:} A straightforward implementation in C++ that processes the input image using the k-means clustering technique. This version, while simple and easy to understand, is optimized for single-threaded execution and serves as a baseline for performance comparisons.
+\item \textbf{Parallel Algorithm with CUDA:} A high-performance version of the k-means algorithm designed to utilize NVIDIA GPUs. This approach leverages CUDA to perform computations in parallel across thousands of GPU cores, providing significant speedups for large-scale image data.
+\end{itemize}
+
+These implementations highlight the trade-offs between simplicity and performance, and they serve as a foundation for evaluating the impact of parallelization on clustering algorithms. The following sections will delve into the specifics of each implementation, detailing their design, execution, and performance considerations.
+
+\section{Sequential cartoonizer}
+We will now break down and analyze different parts of the code, explaining how each segment works and contributes to the overall functionality of the cartoonizer.
+
+\subsection{Euclidean Distance Function}
+This function computes the Euclidean distance between two colors, which is essential for finding the nearest cluster centroid during the K-means algorithm.
+
+\begin{lstlisting}[language=C++]
+// Compute the Euclidean distance between two colors
+float euclidean_distance(const Color& a, const Color& b) {
+    return std::sqrt((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b));
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+This function calculates the squared differences in the RGB values between two colors and returns the square root of the sum of those squared differences. This distance metric is used to compare how close two colors are in RGB space.
+
+\subsection{Update Centroids Function}
+After assigning each pixel to the nearest centroid, the centroids need to be updated by averaging the pixel colors assigned to each cluster.
+
+\begin{lstlisting}[language=C++]
+// Update centroids based on pixel assignments
+void update_centroids(const std::vector<Color>& pixels, const std::vector<int>& assignments, std::vector<Color>& centroids, int k) {
+    std::vector<int> cluster_sizes(k, 0);
+    std::vector<Color> new_centroids(k, {0.0f, 0.0f, 0.0f});
+
+    for (size_t i = 0; i < pixels.size(); i++) {
+        int cluster_idx = assignments[i];
+        new_centroids[cluster_idx].r += pixels[i].r;
+        new_centroids[cluster_idx].g += pixels[i].g;
+        new_centroids[cluster_idx].b += pixels[i].b;
+        cluster_sizes[cluster_idx]++;
+    }
+
+    for (int i = 0; i < k; i++) {
+        if (cluster_sizes[i] > 0) {
+            new_centroids[i].r /= cluster_sizes[i];
+            new_centroids[i].g /= cluster_sizes[i];
+            new_centroids[i].b /= cluster_sizes[i];
+        }
+    }
+
+    centroids = new_centroids;
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+This function iterates over each pixel and updates the centroids by averaging the colors of all pixels assigned to each cluster. It ensures that the new centroids represent the average color of each cluster, which will be used in the next iteration.
+
+\subsection{K-means Function}
+The main function implementing the K-means algorithm for color quantization. It converts the image to a set of color values, applies the K-means clustering algorithm, and then generates the output image with reduced colors.
+
+\begin{lstlisting}[language=C++]
+// K-means algorithm for color quantization
+void kmeans_cpu(const cv::Mat& image, int k, int max_iter, cv::Mat& output_image,int seed) {
+    int width = image.cols;
+    int height = image.rows;
+    int num_pixels = width * height;
+
+    // Convert image to a vector of Color structs
+    std::vector<Color> pixels(num_pixels);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            cv::Vec3b color = image.at<cv::Vec3b>(i, j);
+            pixels[i * width + j] = { color[2] / 255.0f, color[1] / 255.0f, color[0] / 255.0f };
+        }
+    }
+
+    srand(seed);
+
+    // Randomly initialize centroids
+    std::vector<Color> centroids(k);
+    for (int i = 0; i < k; i++) {
+        centroids[i] = { float(rand()) / RAND_MAX, float(rand()) / RAND_MAX, float(rand()) / RAND_MAX };
+    }
+
+    std::vector<int> assignments(num_pixels, 0);
+    for (int iter = 0; iter < max_iter; iter++) {
+        // Step 1: Assign each pixel to the closest centroid
+        for (int i = 0; i < num_pixels; i++) {
+            float min_dist = std::numeric_limits<float>::max();
+            for (int j = 0; j < k; j++) {
+                float dist = euclidean_distance(pixels[i], centroids[j]);
+                if (dist < min_dist) {
+                    min_dist = dist;
+                    assignments[i] = j;
+                }
+            }
+        }
+
+        // Step 2: Update centroids based on the pixel assignments
+        update_centroids(pixels, assignments, centroids, k);
+    }
+
+    // Step 3: Create the output image
+    output_image = image.clone();
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            int cluster_idx = assignments[i * width + j];
+            cv::Vec3b new_color(
+                static_cast<unsigned char>(centroids[cluster_idx].b * 255),
+                static_cast<unsigned char>(centroids[cluster_idx].g * 255),
+                static_cast<unsigned char>(centroids[cluster_idx].r * 255)
+            );
+            output_image.at<cv::Vec3b>(i, j) = new_color;
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+- The function first converts the input image into a vector of `Color` structs. Each pixel’s RGB values are normalized between 0 and 1.
+- It randomly initializes the centroids, assigns each pixel to the nearest centroid, and updates the centroids in each iteration.
+- After \( \text{max\_iter} \) iterations, the final output image is generated where each pixel is replaced by the corresponding centroid color.
+
+\subsection{Main Function}
+The main driver code calls the functions, loads the image, applies K-means, and saves the output image.
+
+\begin{lstlisting}[language=C++]
+int main(int argc, char* argv[]) {
+    int clusters = DEFAULT_CLUSTERS;
+    int iterations = DEFAULT_ITERATIONS;
+    int seed = DEFAULT_SEED;
+    int threads_per_block = DEFAULT_THREADS;
+    std::string input_image_path = "images/image.jpg";
+    std::string output_image_path = "images/cartoon_cpu.jpg";
+
+    arg_parser(argc, argv, clusters, iterations, seed, threads_per_block, input_image_path, output_image_path);
+
+    // Load the image
+    cv::Mat image = cv::imread(input_image_path);
+    if (image.empty()) {
+        std::cerr << "Error loading image!" << std::endl;
+        return -1;
+    }
+
+    cv::Mat output_image;
+    kmeans_cpu(image, clusters, iterations, output_image, seed);
+
+    // Save the output
+    cv::imwrite(output_image_path, output_image);
+    std::cout << "CPU output saved!" << std::endl;
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+The main function reads the input image, applies the K-means algorithm, and saves the result as the output image.
+
+\subsection{Conclusion}
+The K-means algorithm used in this code provides an effective way to reduce the color complexity of an image, giving it a cartoon-like appearance. By analyzing and applying clustering to pixel colors, the image becomes more abstract and simplified, which enhances the cartoon effect.
+
+
+
+\section{Parallel cartoonizer}
