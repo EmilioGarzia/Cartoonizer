@@ -19,8 +19,8 @@
 
 | Metric | Value |
 |:-:|:-:|
-| Execution time (Parallel version)| `~12030 (12.03 seconds)` |
-| Execution time (Sequential version)| `~105250 (1.75 minutes)` |
+| Execution time (Parallel version)| `~12030ms (12.03s)` |
+| Execution time (Sequential version)| `~105250ms (1.75 minutes)` |
 | Delta time | `+93220ms (+1.55 minutes)` |
 | Speedup | `8.74` |
 

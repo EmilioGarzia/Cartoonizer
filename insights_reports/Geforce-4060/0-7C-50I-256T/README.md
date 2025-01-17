@@ -23,8 +23,8 @@ To run the UI Nsight Compute tool, execute the command as shown below:
 
 | Metric | Value |
 |:-:|:-:|
-| Execution time (Parallel version)| `~450 ms (0.45s)` |
-| Execution time (Sequential version)| `~4000 ms (4s)` |
+| Execution time (Parallel version)| `~450ms (0.45s)` |
+| Execution time (Sequential version)| `~4000ms (4s)` |
 | Delta time | `+3550ms (+3.5s)` |
 | Speedup | `8.8` |
 

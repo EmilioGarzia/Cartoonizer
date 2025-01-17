@@ -19,9 +19,9 @@
 
 | Metric | Value |
 |:-:|:-:|
-| Execution time (Parallel version)| `~2806 ms (2.80s)` |
-| Execution time (Sequential version)| `~44190 ms (44.19s)` |
-| Delta time | `+41384 (+41.38s)` |
+| Execution time (Parallel version)| `~2806ms (2.80s)` |
+| Execution time (Sequential version)| `~44190ms (44.19s)` |
+| Delta time | `+41384ms (+41.38s)` |
 | Speedup | `15.74` |
 
 # GPU specs
