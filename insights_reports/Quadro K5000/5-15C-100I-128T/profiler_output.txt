@@ -1,0 +1,27 @@
+==28366== NVPROF is profiling process 28366, command: ./parallel -c 15 -i 100 -t 128 images/image2.jpg
+Kernel execution time: 99358.7 ms
+Output saved to: images/cartoon_gpu.jpg
+==28366== Profiling application: ./parallel -c 15 -i 100 -t 128 images/image2.jpg
+==28366== Profiling result:
+            Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+ GPU activities:   65.01%  5.07669s       100  50.767ms  50.765ms  50.769ms  assign_pixels_to_centroids(Color const *, int*, Color const *, int, int)
+                   34.07%  2.66024s       102  26.081ms  1.8240us  28.072ms  [CUDA memcpy DtoH]
+                    0.92%  71.594ms       102  701.90us     992ns  71.490ms  [CUDA memcpy HtoD]
+      API calls:   63.96%  5.10829s       100  51.083ms  51.007ms  51.307ms  cudaDeviceSynchronize
+                   34.55%  2.75922s       204  13.526ms  35.940us  71.576ms  cudaMemcpy
+                    1.39%  111.33ms         2  55.665ms  1.9560us  111.33ms  cudaEventCreate
+                    0.06%  4.4808ms       100  44.807us  41.471us  82.072us  cudaLaunchKernel
+                    0.02%  1.3360ms         4  334.00us  7.9800us  853.11us  cudaMalloc
+                    0.01%  959.13us         4  239.78us  11.490us  598.76us  cudaFree
+                    0.01%  419.24us        96  4.3670us     418ns  169.29us  cuDeviceGetAttribute
+                    0.00%  349.86us         1  349.86us  349.86us  349.86us  cuDeviceTotalMem
+                    0.00%  54.362us         1  54.362us  54.362us  54.362us  cuDeviceGetName
+                    0.00%  41.354us         2  20.677us  15.676us  25.678us  cudaEventRecord
+                    0.00%  40.211us       100     402ns     348ns  2.2330us  cudaGetLastError
+                    0.00%  17.439us         1  17.439us  17.439us  17.439us  cudaEventSynchronize
+                    0.00%  14.967us         1  14.967us  14.967us  14.967us  cuDeviceGetPCIBusId
+                    0.00%  5.9440us         2  2.9720us     996ns  4.9480us  cudaEventDestroy
+                    0.00%  3.4310us         3  1.1430us     534ns  1.7810us  cuDeviceGetCount
+                    0.00%  2.6830us         1  2.6830us  2.6830us  2.6830us  cudaEventElapsedTime
+                    0.00%  2.3620us         2  1.1810us     528ns  1.8340us  cuDeviceGet
+                    0.00%     574ns         1     574ns     574ns     574ns  cuDeviceGetUuid
