@@ -16,7 +16,6 @@
 #define DEFAULT_CLUSTERS 7
 #define DEFAULT_ITERATIONS 50
 #define DEFAULT_SEED 200
-#define DEFAULT_THREADS 256
 
 struct Color {
     float r, g, b;
@@ -108,7 +107,7 @@ void kmeans_cpu(const cv::Mat& image, int k, int max_iter, cv::Mat& output_image
 }
 
 // Argument parser
-void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed, int& threads_per_block,std::string& input_image_path, std::string& output_image_path){
+void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed, std::string& input_image_path, std::string& output_image_path){
     int opt;
     while ((opt = getopt(argc, argv, "c:i:s:t:")) != -1) {
         switch (opt) {
@@ -121,11 +120,8 @@ void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed
             case 's':
                 seed = std::stoi(optarg);
                 break;
-            case 't':
-                threads_per_block = std::stoi(optarg);
-                break;
             default:
-                std::cerr << "Usage: " << argv[0] << " [-c clusters] [-i iterations] [-s seed] [-t threads] <input_image> <output_image>" << std::endl;
+                std::cerr << "Usage: " << argv[0] << " [-c clusters] [-i iterations] [-s seed] <input_image> <output_image>" << std::endl;
         }
     }
     if (optind < argc) input_image_path = argv[optind++];
@@ -137,11 +133,10 @@ int main(int argc, char* argv[]) {
     int clusters = DEFAULT_CLUSTERS;
     int iterations = DEFAULT_ITERATIONS;
     int seed = DEFAULT_SEED;
-    int threads_per_block = DEFAULT_THREADS;
     std::string input_image_path = "images/image.jpg";
     std::string output_image_path = "images/cartoon_cpu.jpg";
 
-    arg_parser(argc, argv, clusters, iterations, seed, threads_per_block, input_image_path, output_image_path);
+    arg_parser(argc, argv, clusters, iterations, seed, input_image_path, output_image_path);
 
     // Load the image
     cv::Mat image = cv::imread(input_image_path);
