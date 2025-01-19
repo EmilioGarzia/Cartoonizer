@@ -55,3 +55,5 @@ You can skip specifying the input arguments; by default the inputs are:
 
 * *Emilio Garzia*
 * *Luigi Marino*
+* *Emilio Garzia*
+* *Luigi Marino*
