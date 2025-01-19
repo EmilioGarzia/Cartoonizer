@@ -28,7 +28,7 @@ Below is a summary of the main objectives:
 ./sequential "/path/path/image.extension"
 ```
 
-By the way, the program has an arguments parser useful to specify different inputs in order to achive the wanted result:
+Anyway, the program has an arguments parser useful to specify different inputs in order to achive the wanted result:
 
 ```bash
 ./sequential -c <clusters> -i <iterations> -s <random_seed> "/path/input_image.jpg" "/path/output_image.jpg"
@@ -53,7 +53,5 @@ You can skip specifying the input arguments; by default the inputs are:
 
 # Author
 
-* *Emilio Garzia*
-* *Luigi Marino*
 * *Emilio Garzia*
 * *Luigi Marino*
