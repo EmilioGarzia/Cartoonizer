@@ -4,7 +4,7 @@
 
 This is an educational project aimed at showcasing the main advantages of parallel computing using the CUDA framework (GP-GPU). To this end, we developed two different versions of the same program (written in `C++`): one implements a sequential approach (CPU), while the other leverages the CUDA framework (GPU) to apply parallelization.
 
-Below a summary of the main objectives:
+Below, a summary of the main objectives:
 
 - Implementing the K-means algorithm in `CUDA C++`.
 - Developing a sequential version of the same code.
