@@ -1,6 +1,6 @@
 /*
  * Cartoonizer: Image quantization using K-Means algorithms
- * @autors Emilio Garzia, Luigi Marino 
+ * @authors Emilio Garzia, Luigi Marino 
  */
 
 #include <opencv2/opencv.hpp>
@@ -23,12 +23,12 @@ struct Color {
 };
 
 
-// Calcola la distanza euclidea tra due colori
+// Compute the Euclidean distance between two colors
 __device__ float compute_distance(const Color& a, const Color& b) {
     return sqrtf((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b));
 }
 
-// Kernel per assegnare i pixel ai centroidi
+// Kernel that assigns pixel to their centroids
 __global__ void assign_pixels_to_centroids(const Color* pixels, int* assignments, const Color* centroids, int num_pixels, int k) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_pixels) {
@@ -46,15 +46,15 @@ __global__ void assign_pixels_to_centroids(const Color* pixels, int* assignments
 }
 
 
-// Funzione sequenziale per aggiornare i centroidi
+// Sequential function to update centroids
 void update_centroids(const Color* pixels, int* assignments, Color* centroids, int* cluster_sizes, int num_pixels, int k) {
-    // Inizializza i centroidi e le dimensioni dei cluster
+    // Initialize centroids and clusters size
     for (int i = 0; i < k; i++) {
-        centroids[i] = {0.0f, 0.0f, 0.0f};  // Centroidi inizializzati a (0, 0, 0)
-        cluster_sizes[i] = 0;  // Inizializza la dimensione del cluster a 0
+        centroids[i] = {0.0f, 0.0f, 0.0f};  
+        cluster_sizes[i] = 0;  
     }
 
-    // Passa attraverso tutti i pixel per accumulare i colori nei rispettivi centroidi
+    // Iterate over all pixels to accumulate colors in their respective centroids
     for (int i = 0; i < num_pixels; i++) {
         int cluster_idx = assignments[i];
         centroids[cluster_idx].r += pixels[i].r;
@@ -63,7 +63,7 @@ void update_centroids(const Color* pixels, int* assignments, Color* centroids, i
         cluster_sizes[cluster_idx]++;
     }
 
-    // Finalizza i centroidi dividendo per la dimensione del cluster
+    // Divide centroids by the cluster size
     for (int i = 0; i < k; i++) {
         if (cluster_sizes[i] > 0) {
             centroids[i].r /= cluster_sizes[i];
@@ -98,7 +98,7 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
     int height = image.rows;
     int num_pixels = width * height;
 
-    // Converte l'immagine in un vettore di strutture Color
+    // Converting the image into a Color structure
     std::vector<Color> pixels(num_pixels);
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
@@ -107,7 +107,7 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
         }
     }
 
-    // Allocazione memoria su GPU
+    // GPU memory allocation
     Color* d_pixels;
     Color* d_centroids;
     int* d_assignments;
@@ -139,7 +139,7 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
         return;
     }
 
-    // Copia i dati dalla memoria host a quella device
+    // Copy from host to device
     err = cudaMemcpy(d_pixels, pixels.data(), num_pixels * sizeof(Color), cudaMemcpyHostToDevice);
     if (err != cudaSuccess) {
         std::cerr << "CUDA memcpy failed for pixels: " << cudaGetErrorString(err) << std::endl;
@@ -148,24 +148,24 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
 
     srand(seed);
 
-    // Inizializza i centroidi casualmente
+    // Initialize centroids randomly
     std::vector<Color> centroids(k);
     for (int i = 0; i < k; i++) {
         centroids[i] = { float(rand()) / RAND_MAX, float(rand()) / RAND_MAX, float(rand()) / RAND_MAX };
     }
 
-    // Copia i centroidi sulla GPU
+    // Copy centroids to GPU
     err = cudaMemcpy(d_centroids, centroids.data(), k * sizeof(Color), cudaMemcpyHostToDevice);
     if (err != cudaSuccess) {
         std::cerr << "CUDA memcpy failed for centroids: " << cudaGetErrorString(err) << std::endl;
         return;
     }
 
-    // Configurazione del kernel
+    // Kernel configuration
     int blocks_per_grid = (num_pixels + threads_per_block - 1) / threads_per_block;
 
     for (int iter = 0; iter < max_iter; iter++) {
-        // Passo 1: Assegna i pixel ai centroidi (parallelo su GPU)
+        // Step 1: Assign pixels to centroids (parallel on GPU)
         assign_pixels_to_centroids<<<blocks_per_grid, threads_per_block>>>(d_pixels, d_assignments, d_centroids, num_pixels, k);
         err = cudaGetLastError();
         if (err != cudaSuccess) {
@@ -174,17 +174,17 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
         }
         cudaDeviceSynchronize();
 
-        // Passo 2: Aggiorna i centroidi (sequenziale su CPU)
+        // Step 2: Update centroids (sequential on CPU)
         std::vector<int> assignments(num_pixels);
         std::vector<int> cluster_sizes(k);
 
-        // Copia gli assegnamenti dalla GPU alla CPU
+        // Copy assignemtns from GPU to CPU
         cudaMemcpy(assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
 
-        // Aggiornamento dei centroidi sequenziale
+        // Sequential centroids update
         update_centroids(pixels.data(), assignments.data(), centroids.data(), cluster_sizes.data(), num_pixels, k);
 
-        // Copia i centroidi aggiornati dalla CPU alla GPU
+        // Copy updated centroids from CPU to GPU
         err = cudaMemcpy(d_centroids, centroids.data(), k * sizeof(Color), cudaMemcpyHostToDevice);
         if (err != cudaSuccess) {
             std::cerr << "CUDA memcpy failed for centroids: " << cudaGetErrorString(err) << std::endl;
@@ -192,7 +192,7 @@ void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block
         }
     }
 
-    // Copia i centroidi finali e gli assegnamenti dal device all'host
+    // Copy finl centroids and assignment to host
     cudaMemcpy(centroids.data(), d_centroids, k * sizeof(Color), cudaMemcpyDeviceToHost);
     std::vector<int> assignments(num_pixels);
     cudaMemcpy(assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
@@ -255,7 +255,6 @@ int main(int argc, char* argv[]) {
 
     cv::Mat output_image;
 
-    // useful for timing
     cudaEvent_t start, stop;
     float elapsedTime;
     cudaEventCreate(&start);
@@ -265,7 +264,7 @@ int main(int argc, char* argv[]) {
     // Launch kernel
     kmeans_gpu(image, clusters, iterations, threads_per_block, seed, output_image);
 
-    // compute elapsed time
+    // Compute elapsed time
     cudaEventRecord(stop, 0);
     cudaEventSynchronize(stop);
     cudaEventElapsedTime(&elapsedTime, start, stop);

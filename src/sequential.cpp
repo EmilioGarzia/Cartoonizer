@@ -1,6 +1,6 @@
 /*
  * Cartoonizer: Image quantization using K-Means algorithms
- * @autors Emilio Garzia, Luigi Marino 
+ * @authors Emilio Garzia, Luigi Marino 
  */
 
 #include <opencv2/opencv.hpp>
@@ -128,7 +128,7 @@ void arg_parser(int argc,char* argv[], int& clusters, int& iterations, int& seed
     if (optind < argc) output_image_path = argv[optind++];
 }
 
-//driver code
+
 int main(int argc, char* argv[]) {
     int clusters = DEFAULT_CLUSTERS;
     int iterations = DEFAULT_ITERATIONS;
