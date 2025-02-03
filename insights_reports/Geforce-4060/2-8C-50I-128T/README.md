@@ -26,7 +26,7 @@ To run the UI Nsight Compute tool, execute the command as shown below:
 | Execution time (Parallel version)| `~4265ms (4s)` |
 | Execution time (Sequential version)| `~43369ms (43s)` |
 | Delta time | `+39000ms (+39s)` |
-| Speedup | `0.09` |
+| Speedup | `10.17` |
 
 # GPU specs
 
