@@ -162,3 +162,174 @@ The K-means algorithm used in this code provides an effective way to reduce the 
 
 
 \section{Parallel cartoonizer}
+We will now break down and analyze different parts of the CUDA-based parallel implementation of the cartoonizer, explaining how each segment works and contributes to the overall functionality.
+
+\subsection{Euclidean Distance Function}
+This function computes the Euclidean distance between two colors, which is essential for finding the nearest cluster centroid during the K-means algorithm.
+
+\begin{lstlisting}[language=C++]
+// Compute the Euclidean distance between two colors
+__device__ float euclidean_distance(const Color& a, const Color& b) {
+    return sqrtf((a.r - b.r) * (a.r - b.r) + (a.g - b.g) * (a.g - b.g) + (a.b - b.b) * (a.b - b.b));
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+This function calculates the squared differences in the RGB values between two colors and returns the square root of the sum of those squared differences. This distance metric is used to compare how close two colors are in RGB space. It is defined with the \texttt{\_\_device\_\_} qualifier to run directly on the GPU.
+
+\subsection{CUDA Kernel for Pixel Assignment}
+This kernel assigns each pixel to the nearest centroid by computing the Euclidean distance between the pixel's color and each centroid.
+
+\begin{lstlisting}[language=C++]
+__global__ void assign_pixels_to_centroids(
+    const Color* pixels, int* assignments, 
+    const Color* centroids, int num_pixels, int k) {
+    
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < num_pixels) {
+        float min_dist = FLT_MAX;
+        int closest_centroid = 0;
+        for (int i = 0; i < k; i++) {
+            float dist = euclidean_distance(pixels[idx], centroids[i]);
+            if (dist < min_dist) {
+                min_dist = dist;
+                closest_centroid = i;
+            }
+        }
+        assignments[idx] = closest_centroid;
+    }
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+Each thread processes a single pixel, computing its distance to all centroids and storing the index of the closest centroid in the \texttt{assignments} array. The kernel is executed with a number of threads equal to the number of pixels, divided across multiple blocks.
+
+\subsection{Centroid Update Function (CPU)}
+After assigning pixels to centroids on the GPU, the centroids are updated on the CPU by averaging the pixel colors assigned to each cluster.
+
+\begin{lstlisting}[language=C++]
+void update_centroids(const Color* pixels, int* assignments, 
+                      Color* centroids, int* cluster_sizes, 
+                      int num_pixels, int k) {
+    for (int i = 0; i < k; i++) {
+        centroids[i] = {0.0f, 0.0f, 0.0f};  
+        cluster_sizes[i] = 0;
+    }
+    for (int i = 0; i < num_pixels; i++) {
+        int cluster_idx = assignments[i];
+        centroids[cluster_idx].r += pixels[i].r;
+        centroids[cluster_idx].g += pixels[i].g;
+        centroids[cluster_idx].b += pixels[i].b;
+        cluster_sizes[cluster_idx]++;
+    }
+    for (int i = 0; i < k; i++) {
+        if (cluster_sizes[i] > 0) {
+            centroids[i].r /= cluster_sizes[i];
+            centroids[i].g /= cluster_sizes[i];
+            centroids[i].b /= cluster_sizes[i];
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+This function computes new centroid positions by averaging the colors of all assigned pixels. Since centroid updates involve atomic operations or reductions, performing them on the CPU simplifies implementation while maintaining good performance.
+
+\subsection{K-means Function (CUDA)}
+The main function implementing the K-means algorithm for color quantization using CUDA. It transfers data between CPU and GPU, launches the pixel assignment kernel, and updates centroids iteratively.
+
+\begin{lstlisting}[language=C++]
+// K-means algorithm using CUDA
+void kmeans_gpu(const cv::Mat& image, int k, int max_iter, int threads_per_block, 
+                int seed, cv::Mat& output_image) {
+    
+    int width = image.cols;
+    int height = image.rows;
+    int num_pixels = width * height;
+
+    std::vector<Color> h_pixels(num_pixels);
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            cv::Vec3b color = image.at<cv::Vec3b>(i, j);
+            h_pixels[i * width + j] = { color[2] / 255.0f, color[1] / 255.0f, color[0] / 255.0f };
+        }
+    }
+
+    Color *d_pixels, *d_centroids;
+    int *d_assignments;
+    cudaMalloc(&d_pixels, num_pixels * sizeof(Color));
+    cudaMalloc(&d_assignments, num_pixels * sizeof(int));
+    cudaMalloc(&d_centroids, k * sizeof(Color));
+
+    cudaMemcpy(d_pixels, h_pixels.data(), num_pixels * sizeof(Color), cudaMemcpyHostToDevice);
+
+    std::vector<Color> h_centroids(k);
+    srand(seed);
+    for (int i = 0; i < k; i++) {
+        h_centroids[i] = { float(rand()) / RAND_MAX, float(rand()) / RAND_MAX, float(rand()) / RAND_MAX };
+    }
+    cudaMemcpy(d_centroids, h_centroids.data(), k * sizeof(Color), cudaMemcpyHostToDevice);
+
+    int blocks = (num_pixels + threads_per_block - 1) / threads_per_block;
+
+    for (int iter = 0; iter < max_iter; iter++) {
+        assign_pixels_to_centroids<<<blocks, threads_per_block>>>(d_pixels, d_assignments, d_centroids, num_pixels, k);
+        cudaDeviceSynchronize();
+
+        std::vector<int> h_assignments(num_pixels);
+        cudaMemcpy(h_assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
+
+        update_centroids(h_pixels.data(), h_assignments.data(), h_centroids.data(), new int[k], num_pixels, k);
+        cudaMemcpy(d_centroids, h_centroids.data(), k * sizeof(Color), cudaMemcpyHostToDevice);
+    }
+
+    cudaMemcpy(h_assignments.data(), d_assignments, num_pixels * sizeof(int), cudaMemcpyDeviceToHost);
+    cudaFree(d_pixels);
+    cudaFree(d_assignments);
+    cudaFree(d_centroids);
+
+    build_output_image(image, output_image, h_assignments, h_centroids);
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+- The function first copies image data to the GPU.
+- It randomly initializes centroids and transfers them to GPU memory.
+- The CUDA kernel assigns each pixel to the nearest centroid.
+- Assignments are copied back to the CPU, where centroids are updated.
+- The process repeats for \texttt{max\_iter} iterations before reconstructing the output image.
+
+\subsection{Main Function}
+The main driver code calls the functions, loads the image, applies K-means using CUDA, and saves the output image.
+
+\begin{lstlisting}[language=C++]
+int main(int argc, char* argv[]) {
+    int clusters = DEFAULT_CLUSTERS;
+    int iterations = DEFAULT_ITERATIONS;
+    int seed = DEFAULT_SEED;
+    int threads_per_block = DEFAULT_THREADS;
+    std::string input_image_path = "images/image.jpg";
+    std::string output_image_path = "images/cartoon_cuda.jpg";
+
+    arg_parser(argc, argv, clusters, iterations, seed, threads_per_block, input_image_path, output_image_path);
+
+    cv::Mat image = cv::imread(input_image_path);
+    if (image.empty()) {
+        std::cerr << "Error loading image!" << std::endl;
+        return -1;
+    }
+
+    cv::Mat output_image;
+    kmeans_gpu(image, clusters, iterations, threads_per_block, seed, output_image);
+
+    cv::imwrite(output_image_path, output_image);
+    std::cout << "CUDA output saved!" << std::endl;
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Explanation:}
+The main function reads the input image, applies the K-means algorithm using CUDA, and saves the result as the output image.
+
+\subsection{Conclusion}
+By leveraging GPU acceleration, the CUDA-based K-means implementation significantly speeds up color quantization, making real-time cartoonization feasible even for high-resolution images.
