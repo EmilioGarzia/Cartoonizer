@@ -36,8 +36,6 @@ The used GPUs for our session tests are:
 * `NVIDIA GeForce 1660`
 * `NVIDIA GeForce RTX 4060`
 
-![Pie chart]()
-
-![Bar chart]()
-
-![Speedup chart]()
+![exeution time per session istogram](execution_time_per_session.jpeg) 
+![average gpu time](average_gpu_time.jpeg) 
+![Execution time distribution pie chart](execution_time_distribution.jpeg)
